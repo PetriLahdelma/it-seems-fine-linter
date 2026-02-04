@@ -1,0 +1,39 @@
+{
+  "name": "it-seems-fine-linter",
+  "version": "0.1.0",
+  "description": "CLI that detects vibes-based engineering phrases and scores risk.",
+  "type": "module",
+  "bin": {
+    "it-seems-fine-linter": "dist/index.js"
+  },
+  "exports": {
+    ": ": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run build && node dist/index.js --paths src",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node test/score.test.js"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PetriLahdelma/it-seems-fine-linter.git"
+  },
+  "homepage": "https://github.com/PetriLahdelma/it-seems-fine-linter#readme",
+  "bugs": {
+    "url": "https://github.com/PetriLahdelma/it-seems-fine-linter/issues"
+  }
+}
