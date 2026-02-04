@@ -35,5 +35,8 @@
   "homepage": "https://github.com/PetriLahdelma/it-seems-fine-linter#readme",
   "bugs": {
     "url": "https://github.com/PetriLahdelma/it-seems-fine-linter/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30"
   }
 }
