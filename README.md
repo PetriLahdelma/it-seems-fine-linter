@@ -4,16 +4,49 @@
 </picture>
 
 # It Seems Fine Linter
-Detect vibes-based engineering and score the risk. Turns vague language into a measurable risk score for CI.
+Detect vibes-based engineering and score the risk. Turns vague language into a measurable risk score for CI. Fail a PR with a single numeric risk score.
+
+**Type:** CLI (Node.js)
 
 ![CI](https://github.com/PetriLahdelma/it-seems-fine-linter/actions/workflows/ci.yml/badge.svg) ![Release](https://img.shields.io/github/v/release/PetriLahdelma/it-seems-fine-linter) ![License](https://img.shields.io/github/license/PetriLahdelma/it-seems-fine-linter) ![Stars](https://img.shields.io/github/stars/PetriLahdelma/it-seems-fine-linter)
 
 > [!IMPORTANT]
 > Run this on trusted branches only. Strict mode can fail CI when the score crosses your threshold.
 
+## Highlights
+- Scores risky language into a numeric CI signal.
+- Strict mode gates builds with explicit thresholds.
+- JSON output for dashboards and trend tracking.
+
+
+## Output
+![Output Preview](branding/screenshots/output-demo.svg)
+
+Example artifacts live in `examples/`.
+
+Need help? Start with `docs/troubleshooting.md`.
+
+```text
+Vibe Risk Score: 44
+Threshold: 25 (strict)
+2 match(es)
+- examples/input/sample.ts: it seems fine (sev 3)
+Exit 2 when score >= threshold
+```
+
+
 ## Quickstart
 ```bash
 npx it-seems-fine-linter --paths src
+```
+
+Try a curated pack: `it-seems-fine-linter --paths src --config phrase-packs/shipping-risk.json`.
+
+
+## CI in 60s
+```yaml
+- name: Run linter
+  run: npx it-seems-fine-linter --paths src --strict --threshold 25
 ```
 
 ## Demo
@@ -23,88 +56,43 @@ npx it-seems-fine-linter --paths src
 it-seems-fine-linter --paths src --strict
 ```
 
+
+## Compatibility
+- Node.js: 20 (CI on ubuntu-latest).
+- OS: Linux in CI; macOS/Windows are expected to work but unverified.
+- External deps: none.
+
+## Guarantees & Non-Goals
+**Guarantees**
+- Deterministic scoring for the same files and phrase config.
+- Scans only comments and PR metadata (no runtime execution).
+
+**Non-Goals**
+- Not a security scanner or full static analyzer.
+- Does not interpret runtime behavior.
+
 ## Docs
-Start here: [Requirements](#requirements) · [Install](#install) · [Usage](#usage) · [Configuration](#configuration) · [Exit Codes](#exit-codes) · [Troubleshooting](#troubleshooting)
+- [Requirements](docs/requirements.md)
+- [Usage](docs/usage.md)
+- [Configuration](docs/configuration.md)
+- [Phrase Packs](docs/phrase-packs.md)
+- [JSON Output](docs/json-output.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Guarantees & Non-Goals](docs/guarantees.md)
+- [Constraints](docs/constraints.md)
+
+More: [docs/README.md](docs/README.md)
+
+## Examples
+See `examples/README.md` for inputs and expected outputs.
+
+## Used By
+Open a PR to add your org.
+
 
 ## Contributing
 See `CONTRIBUTING.md`.
 
-## Requirements
-
-- Node.js 20+
-
-## Install
-
-```bash
-npm install -D it-seems-fine-linter
-```
-
-## Usage
-
-```bash
-it-seems-fine-linter --paths src
-it-seems-fine-linter --paths src,docs --strict --threshold 30
-it-seems-fine-linter --config phrases.json --json
-```
-
-**Options**
-
-- `--paths <globs>` Comma-separated paths or glob patterns. Directories expand to `**/*`. Default: `.`.
-- `--config <file>` JSON config with `phrases` and optional `threshold`.
-- `--strict` Exit `2` when score >= threshold.
-- `--threshold <n>` Score threshold (default `25`). CLI flag overrides config.
-- `--json` Emit machine-readable JSON.
-
-## Why This Exists
-
-Turn vague phrases into measurable signal before merging.
-
-## Configuration
-
-```json
-{
-  "threshold": 30,
-  "phrases": [
-    { "phrase": "should be fine", "severity": 2 },
-    { "phrase": "ship it", "severity": 3 }
-  ]
-}
-```
-
-## JSON Output
-
-```json
-{
-  "score": 18,
-  "threshold": 25,
-  "strict": false,
-  "matchCount": 2,
-  "matches": [
-    { "location": "src/app.ts", "phrase": "ship it", "severity": 3 }
-  ]
-}
-```
-
-## Exit Codes
-
-- `0` Success
-- `1` Runtime/config error or no files matched
-- `2` Strict mode threshold exceeded
-
-## Troubleshooting
-
-- **No files matched**: Ensure `--paths` points to existing directories or valid glob patterns.
-- **Config not found**: Pass an absolute or repo-relative path to `--config`.
-- **Config JSON error**: Validate JSON format and ensure `threshold`/`severity` are numbers.
-- **No matches**: Remember it scans comments and PR metadata; text in code strings won't match unless in comments.
-- **CI mismatch**: Ensure `GITHUB_EVENT_PATH` exists if relying on PR title/body scanning.
-
-## FAQ
-
-- **Custom phrases?** Yes via `--config`.
-- **CI friendly?** Yes with strict mode.
-
 ## License
 
 MIT
-

@@ -1,0 +1,25 @@
+{
+  "threshold": 30,
+  "phrases": [
+    {
+      "phrase": "internal only",
+      "severity": 3
+    },
+    {
+      "phrase": "not exploitable",
+      "severity": 4
+    },
+    {
+      "phrase": "low risk",
+      "severity": 2
+    },
+    {
+      "phrase": "temporary exception",
+      "severity": 3
+    },
+    {
+      "phrase": "bypass",
+      "severity": 5
+    }
+  ]
+}

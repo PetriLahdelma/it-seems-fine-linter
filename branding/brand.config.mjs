@@ -5,6 +5,7 @@ export default {
   accent: "#F97316",
   pills: ["Risk score","Phrase packs","CI strict mode"],
   demo: ["$ it-seems-fine-linter --paths src --strict","Scanning 42 files...","Matches: 2  Score: 18  Threshold: 25","Strict mode: PASS (exit 0)"],
+  output: ["Vibe Risk Score: 44","Threshold: 25 (strict)","2 match(es)","- examples/input/sample.ts: it seems fine (sev 3)"],
   callout: "Run this on trusted branches only. Strict mode can fail CI when the score crosses your threshold.",
   quickstart: "npx it-seems-fine-linter --paths src",
   hero: { width: 1600, height: 900 },

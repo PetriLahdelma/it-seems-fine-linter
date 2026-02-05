@@ -1,0 +1,18 @@
+{
+  "score": 44,
+  "threshold": 25,
+  "strict": true,
+  "matchCount": 2,
+  "matches": [
+    {
+      "location": "examples/input/sample.ts",
+      "phrase": "it seems fine",
+      "severity": 3
+    },
+    {
+      "location": "examples/input/sample.ts",
+      "phrase": "yolo",
+      "severity": 5
+    }
+  ]
+}
