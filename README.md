@@ -8,7 +8,7 @@ Detect vibes-based engineering and score the risk. Turns vague language into a m
 
 **Type:** CLI (Node.js)
 
-![CI](https://github.com/PetriLahdelma/it-seems-fine-linter/actions/workflows/ci.yml/badge.svg) ![Release](https://img.shields.io/github/v/release/PetriLahdelma/it-seems-fine-linter) ![License](https://img.shields.io/github/license/PetriLahdelma/it-seems-fine-linter) ![Stars](https://img.shields.io/github/stars/PetriLahdelma/it-seems-fine-linter)
+![CI](https://github.com/PetriLahdelma/it-seems-fine-linter/actions/workflows/ci.yml/badge.svg) ![Release](https://img.shields.io/github/v/release/PetriLahdelma/it-seems-fine-linter) ![Provenance](https://img.shields.io/badge/npm%20provenance-verified-brightgreen?logo=npm) ![License](https://img.shields.io/github/license/PetriLahdelma/it-seems-fine-linter) ![Stars](https://img.shields.io/github/stars/PetriLahdelma/it-seems-fine-linter)
 
 > [!IMPORTANT]
 > Run this on trusted branches only. Strict mode can fail CI when the score crosses your threshold.
