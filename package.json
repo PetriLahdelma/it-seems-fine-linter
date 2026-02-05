@@ -19,7 +19,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "npm run build && node dist/index.js --paths src",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node test/score.test.js"
+    "test": "npm run build && node test/score.test.js",
+    "render": "node scripts/render-hero.mjs && node scripts/render-og.mjs && node scripts/render-before-after.mjs && node scripts/render-readme.mjs"
   },
   "dependencies": {
     "fast-glob": "^3.3.2"
@@ -37,6 +38,7 @@
     "url": "https://github.com/PetriLahdelma/it-seems-fine-linter/issues"
   },
   "devDependencies": {
-    "@types/node": "^20.11.30"
+    "@types/node": "^20.11.30",
+    "playwright": "^1.49.0"
   }
 }
