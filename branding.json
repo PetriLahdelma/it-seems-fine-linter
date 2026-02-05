@@ -1,0 +1,60 @@
+{
+  "name": "it-seems-fine-linter",
+  "tagline": "Detect vibes-based engineering and score the risk.",
+  "accent": [
+    "#f97316",
+    "#e11d48"
+  ],
+  "logo": "assets/logo.svg",
+  "badges": [
+    {
+      "label": "version",
+      "value": "v0.1.0"
+    },
+    {
+      "label": "license",
+      "value": "MIT"
+    },
+    {
+      "label": "ci",
+      "value": "passing"
+    },
+    {
+      "label": "stars",
+      "value": "github"
+    }
+  ],
+  "badgesMd": [
+    {
+      "label": "CI",
+      "url": "https://github.com/PetriLahdelma/it-seems-fine-linter/actions/workflows/ci.yml/badge.svg"
+    },
+    {
+      "label": "Release",
+      "url": "https://img.shields.io/github/v/release/PetriLahdelma/it-seems-fine-linter"
+    },
+    {
+      "label": "License",
+      "url": "https://img.shields.io/github/license/PetriLahdelma/it-seems-fine-linter"
+    },
+    {
+      "label": "Stars",
+      "url": "https://img.shields.io/github/stars/PetriLahdelma/it-seems-fine-linter"
+    }
+  ],
+  "proof": "Proof: Vibe Risk Score in CI.",
+  "beforeAfter": {
+    "before": "It seems fine in reviews",
+    "after": "Risk scored and flagged"
+  },
+  "quickstart": "```bash\nnpx it-seems-fine-linter --paths src\n```",
+  "demo": "```bash\nit-seems-fine-linter --paths src --strict\n```",
+  "why": "Turn vague phrases into measurable signal before merging.",
+  "faq": "- **Custom phrases?** Yes via `--config`.\n- **CI friendly?** Yes with strict mode.",
+  "contributing": "See `CONTRIBUTING.md` for how to add phrase packs.",
+  "license": "MIT",
+  "hero": {
+    "width": 1600,
+    "height": 900
+  }
+}
