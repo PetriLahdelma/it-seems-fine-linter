@@ -3,7 +3,7 @@
   <img alt="it-seems-fine-linter hero" src="branding/hero.png" width="100%">
 </picture>
 
-# it-seems-fine-linter
+# It Seems Fine Linter
 Detect vibes-based engineering and score the risk. Turns vague language into a measurable risk score for CI.
 
 ![CI](https://github.com/PetriLahdelma/it-seems-fine-linter/actions/workflows/ci.yml/badge.svg) ![Release](https://img.shields.io/github/v/release/PetriLahdelma/it-seems-fine-linter) ![License](https://img.shields.io/github/license/PetriLahdelma/it-seems-fine-linter) ![Stars](https://img.shields.io/github/stars/PetriLahdelma/it-seems-fine-linter)
