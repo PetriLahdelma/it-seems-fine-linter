@@ -4,7 +4,7 @@ export default {
   value: "Turns vague language into a measurable risk score for CI.",
   accent: "#F97316",
   pills: ["Risk score","Phrase packs","CI strict mode"],
-  demo: ["$ it-seems-fine-linter --paths src --strict","Scanning 42 files...","Matches: 3  Score: 31  Threshold: 25","Strict mode: FAILED (exit 2)"],
+  demo: ["$ it-seems-fine-linter --paths src --strict","Scanning 42 files...","Matches: 2  Score: 18  Threshold: 25","Strict mode: PASS (exit 0)"],
   callout: "Run this on trusted branches only. Strict mode can fail CI when the score crosses your threshold.",
   quickstart: "npx it-seems-fine-linter --paths src",
   hero: { width: 1600, height: 900 },
