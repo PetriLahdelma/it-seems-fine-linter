@@ -1,20 +1,17 @@
 import fs from "node:fs";
 
-export type PhraseConfig = { phrase: string; severity: number };
-export type UserConfig = { threshold?: number; phrases?: PhraseConfig[] };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
+function isRecord(value) {
   return typeof value === "object" && value !== null;
 }
 
-export function loadConfig(path?: string): UserConfig {
+function loadConfig(path) {
   if (!path) return {};
   if (!fs.existsSync(path)) {
     throw new Error(`Config not found: ${path}`);
   }
 
   const raw = fs.readFileSync(path, "utf8");
-  let parsed: unknown;
+  let parsed;
   try {
     parsed = JSON.parse(raw);
   } catch {
@@ -25,7 +22,7 @@ export function loadConfig(path?: string): UserConfig {
     throw new Error(`Config must be an object: ${path}`);
   }
 
-  const config = parsed as UserConfig;
+  const config = parsed;
 
   if (config.threshold !== undefined) {
     if (typeof config.threshold !== "number" || Number.isNaN(config.threshold)) {
@@ -52,3 +49,5 @@ export function loadConfig(path?: string): UserConfig {
 
   return config;
 }
+
+export { loadConfig };

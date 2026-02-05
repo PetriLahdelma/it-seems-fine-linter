@@ -5,16 +5,6 @@ import fg from "fast-glob";
 import { defaultPhrases } from "./phrases.js";
 import { loadConfig } from "./config.js";
 
-type Options = {
-  paths: string[];
-  config?: string;
-  strict: boolean;
-  threshold: number;
-  json: boolean;
-  help: boolean;
-  thresholdProvided: boolean;
-};
-
 const HELP_TEXT = `
 it-seems-fine-linter
 Detect vibes-based engineering phrases and score the risk.
@@ -42,8 +32,8 @@ function printHelp() {
   console.log(HELP_TEXT);
 }
 
-function parseArgs(argv: string[]): Options {
-  const opts: Options = {
+function parseArgs(argv) {
+  const opts = {
     paths: [],
     strict: false,
     threshold: 25,
@@ -109,7 +99,6 @@ function parseArgs(argv: string[]): Options {
     if (a.startsWith("-")) {
       throw new Error(`Unknown option: ${a}`);
     }
-    // Treat positional args as additional paths for convenience
     opts.paths.push(a);
     pathsProvided = true;
   }
@@ -119,12 +108,12 @@ function parseArgs(argv: string[]): Options {
   return opts;
 }
 
-function hasGlob(value: string): boolean {
+function hasGlob(value) {
   return /[*?[\]{}]/.test(value);
 }
 
-function normalizePatterns(pathsList: string[]): string[] {
-  const patterns: string[] = [];
+function normalizePatterns(pathsList) {
+  const patterns = [];
   for (const entry of pathsList) {
     const value = entry.trim();
     if (!value) continue;
@@ -143,19 +132,19 @@ function normalizePatterns(pathsList: string[]): string[] {
   return patterns;
 }
 
-function extractComments(source: string): string[] {
-  const comments: string[] = [];
+function extractComments(source) {
+  const comments = [];
   const lineComments = source.match(/\/\/.*$/gm) || [];
   const blockComments = source.match(/\/\*[\s\S]*?\*\//g) || [];
   return comments.concat(lineComments, blockComments);
 }
 
-function scoreMatches(matches: number, severitySum: number): number {
+function scoreMatches(matches, severitySum) {
   return Math.min(100, severitySum * 5 + matches * 2);
 }
 
 async function main() {
-  let opts: Options;
+  let opts;
   try {
     opts = parseArgs(process.argv.slice(2));
   } catch (err) {
@@ -186,7 +175,7 @@ async function main() {
     return;
   }
 
-  const targets: { location: string; text: string }[] = [];
+  const targets = [];
 
   for (const file of files) {
     const src = fs.readFileSync(file, "utf8");
@@ -203,7 +192,7 @@ async function main() {
     }
   }
 
-  const matches: { location: string; phrase: string; severity: number }[] = [];
+  const matches = [];
   let severitySum = 0;
 
   for (const target of targets) {
