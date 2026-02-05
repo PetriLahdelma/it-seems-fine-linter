@@ -50,7 +50,7 @@ Try a curated pack: `it-seems-fine-linter --paths src --config phrase-packs/ship
 ```
 
 ## Demo
-![Terminal Demo](branding/screenshots/terminal-demo.svg)
+![Demo](branding/demos/demo.gif)
 
 ```bash
 it-seems-fine-linter --paths src --strict
