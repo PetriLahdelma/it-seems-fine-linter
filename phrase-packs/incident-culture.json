@@ -1,0 +1,25 @@
+{
+  "threshold": 24,
+  "phrases": [
+    {
+      "phrase": "cannot repro",
+      "severity": 3
+    },
+    {
+      "phrase": "probably ok",
+      "severity": 2
+    },
+    {
+      "phrase": "seems harmless",
+      "severity": 2
+    },
+    {
+      "phrase": "edge case",
+      "severity": 2
+    },
+    {
+      "phrase": "fine in prod",
+      "severity": 4
+    }
+  ]
+}

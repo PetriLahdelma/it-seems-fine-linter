@@ -1,0 +1,25 @@
+{
+  "threshold": 28,
+  "phrases": [
+    {
+      "phrase": "ship it",
+      "severity": 3
+    },
+    {
+      "phrase": "just push",
+      "severity": 3
+    },
+    {
+      "phrase": "we can fix later",
+      "severity": 4
+    },
+    {
+      "phrase": "quick workaround",
+      "severity": 2
+    },
+    {
+      "phrase": "skip tests",
+      "severity": 5
+    }
+  ]
+}
