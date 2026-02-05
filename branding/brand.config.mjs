@@ -8,6 +8,7 @@ export default {
   callout: "Run this on trusted branches only. Strict mode can fail CI when the score crosses your threshold.",
   quickstart: "npx it-seems-fine-linter --paths src",
   hero: { width: 1600, height: 900 },
+  heroAccent: "none",
   icon: {
     inner: `
 <path d="M256 112 L128 400 H384 Z" stroke="{{accent}}" stroke-width="{{stroke}}" stroke-linejoin="round"/>
