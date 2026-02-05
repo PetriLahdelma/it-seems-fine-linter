@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
 import fg from "fast-glob";
 import { defaultPhrases } from "./phrases.js";
 import { loadConfig } from "./config.js";
@@ -10,19 +11,136 @@ type Options = {
   strict: boolean;
   threshold: number;
   json: boolean;
+  help: boolean;
+  thresholdProvided: boolean;
 };
 
+const HELP_TEXT = `
+it-seems-fine-linter
+Detect vibes-based engineering phrases and score the risk.
+
+Usage:
+  it-seems-fine-linter --paths src
+  it-seems-fine-linter --paths src,docs --strict --threshold 30
+  it-seems-fine-linter --config phrases.json --json
+
+Options:
+  --paths <globs>    Comma-separated paths or glob patterns (default: .)
+  --config <file>    JSON config with phrases/threshold
+  --strict           Exit 2 when score >= threshold
+  --threshold <n>    Score threshold (default: 25)
+  --json             Emit machine-readable JSON
+  -h, --help         Show help
+
+Exit codes:
+  0 success
+  1 runtime/config error or no files matched
+  2 strict mode threshold exceeded
+`.trim();
+
+function printHelp() {
+  console.log(HELP_TEXT);
+}
+
 function parseArgs(argv: string[]): Options {
-  const opts: Options = { paths: ["."], strict: false, threshold: 25, json: false };
+  const opts: Options = {
+    paths: [],
+    strict: false,
+    threshold: 25,
+    json: false,
+    help: false,
+    thresholdProvided: false
+  };
+  let pathsProvided = false;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--paths") opts.paths = (argv[++i] || ".").split(",");
-    else if (a === "--config") opts.config = argv[++i];
-    else if (a === "--strict") opts.strict = true;
-    else if (a === "--threshold") opts.threshold = Number(argv[++i] || opts.threshold);
-    else if (a === "--json") opts.json = true;
+    if (a === "--help" || a === "-h") {
+      opts.help = true;
+      continue;
+    }
+    if (a === "--paths") {
+      const value = argv[++i];
+      if (!value) {
+        throw new Error("Missing value for --paths");
+      }
+      const parts = value
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+      if (parts.length === 0) {
+        throw new Error("No paths provided for --paths");
+      }
+      if (!pathsProvided) {
+        opts.paths = [];
+        pathsProvided = true;
+      }
+      opts.paths.push(...parts);
+      continue;
+    }
+    if (a === "--config") {
+      const value = argv[++i];
+      if (!value) {
+        throw new Error("Missing value for --config");
+      }
+      opts.config = value;
+      continue;
+    }
+    if (a === "--strict") {
+      opts.strict = true;
+      continue;
+    }
+    if (a === "--threshold") {
+      const value = argv[++i];
+      if (!value) {
+        throw new Error("Missing value for --threshold");
+      }
+      const num = Number(value);
+      if (!Number.isFinite(num) || num < 0) {
+        throw new Error("Threshold must be a non-negative number");
+      }
+      opts.threshold = num;
+      opts.thresholdProvided = true;
+      continue;
+    }
+    if (a === "--json") {
+      opts.json = true;
+      continue;
+    }
+    if (a.startsWith("-")) {
+      throw new Error(`Unknown option: ${a}`);
+    }
+    // Treat positional args as additional paths for convenience
+    opts.paths.push(a);
+    pathsProvided = true;
+  }
+  if (!pathsProvided) {
+    opts.paths = ["."];
   }
   return opts;
+}
+
+function hasGlob(value: string): boolean {
+  return /[*?[\]{}]/.test(value);
+}
+
+function normalizePatterns(pathsList: string[]): string[] {
+  const patterns: string[] = [];
+  for (const entry of pathsList) {
+    const value = entry.trim();
+    if (!value) continue;
+    if (hasGlob(value)) {
+      patterns.push(value);
+      continue;
+    }
+    const absolute = path.resolve(value);
+    if (fs.existsSync(absolute) && fs.statSync(absolute).isDirectory()) {
+      const normalized = value.replace(/\\/g, "/").replace(/\/$/, "");
+      patterns.push(`${normalized}/**/*`);
+      continue;
+    }
+    patterns.push(value);
+  }
+  return patterns;
 }
 
 function extractComments(source: string): string[] {
@@ -37,15 +155,36 @@ function scoreMatches(matches: number, severitySum: number): number {
 }
 
 async function main() {
-  const opts = parseArgs(process.argv.slice(2));
-  const user = loadConfig(opts.config);
-  const phrases = user.phrases || defaultPhrases;
-  const threshold = user.threshold ?? opts.threshold;
+  let opts: Options;
+  try {
+    opts = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    printHelp();
+    process.exit(1);
+    return;
+  }
 
-  const files = await fg(opts.paths, {
+  if (opts.help) {
+    printHelp();
+    return;
+  }
+
+  const user = loadConfig(opts.config);
+  const phrases = user.phrases && user.phrases.length > 0 ? user.phrases : defaultPhrases;
+  const threshold = opts.thresholdProvided ? opts.threshold : (user.threshold ?? opts.threshold);
+
+  const patterns = normalizePatterns(opts.paths);
+  const files = await fg(patterns, {
     onlyFiles: true,
-    ignore: ["**/node_modules/**", "**/dist/**"]
+    ignore: ["**/node_modules/**", "**/dist/**", "**/.git/**"]
   });
+
+  if (files.length === 0) {
+    console.error(`No files matched. Check --paths: ${opts.paths.join(", ")}`);
+    process.exit(1);
+    return;
+  }
 
   const targets: { location: string; text: string }[] = [];
 
@@ -80,9 +219,22 @@ async function main() {
   const score = scoreMatches(matches.length, severitySum);
 
   if (opts.json) {
-    console.log(JSON.stringify({ score, matches }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          score,
+          threshold,
+          strict: opts.strict,
+          matchCount: matches.length,
+          matches
+        },
+        null,
+        2
+      )
+    );
   } else {
     console.log(`Vibe Risk Score: ${score}`);
+    console.log(`Threshold: ${threshold}${opts.strict ? " (strict)" : ""}`);
     console.log(`${matches.length} match(es)`);
     for (const m of matches) {
       console.log(`- ${m.location}: ${m.phrase} (sev ${m.severity})`);

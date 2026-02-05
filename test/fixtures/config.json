@@ -1,0 +1,6 @@
+{
+  "threshold": 10,
+  "phrases": [
+    { "phrase": "it seems fine", "severity": 3 }
+  ]
+}
