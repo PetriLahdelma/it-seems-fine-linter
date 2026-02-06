@@ -1,6 +1,6 @@
 {
   "name": "it-seems-fine-linter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI that detects vibes-based engineering phrases and scores risk.",
   "keywords": [
     "lint",
