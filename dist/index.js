@@ -15,6 +15,7 @@ Usage:
 
 Options:
   --paths <globs>    Comma-separated paths or glob patterns (default: .)
+  --extensions <list> Comma-separated extensions for directory scans (default: js,jsx,ts,tsx,mjs,cjs,md,mdx,txt,yml,yaml)
   --config <file>    JSON config with phrases/threshold
   --strict           Exit 2 when score >= threshold
   --threshold <n>    Score threshold (default: 25)
@@ -32,6 +33,7 @@ function printHelp() {
 function parseArgs(argv) {
     const opts = {
         paths: [],
+        extensions: ["js", "jsx", "ts", "tsx", "mjs", "cjs", "md", "mdx", "txt", "yml", "yaml"],
         strict: false,
         threshold: 25,
         json: false,
@@ -72,6 +74,21 @@ function parseArgs(argv) {
             opts.config = value;
             continue;
         }
+        if (a === "--extensions") {
+            const value = argv[++i];
+            if (!value) {
+                throw new Error("Missing value for --extensions");
+            }
+            const parts = value
+                .split(",")
+                .map(part => part.trim().replace(/^\./, "").toLowerCase())
+                .filter(Boolean);
+            if (parts.length === 0) {
+                throw new Error("No extensions provided for --extensions");
+            }
+            opts.extensions = parts;
+            continue;
+        }
         if (a === "--strict") {
             opts.strict = true;
             continue;
@@ -108,8 +125,9 @@ function parseArgs(argv) {
 function hasGlob(value) {
     return /[*?[\]{}]/.test(value);
 }
-function normalizePatterns(pathsList) {
+function normalizePatterns(pathsList, extensions) {
     const patterns = [];
+    const extPattern = extensions.length > 0 ? `**/*.{${extensions.join(",")}}` : "**/*";
     for (const entry of pathsList) {
         const value = entry.trim();
         if (!value)
@@ -121,12 +139,20 @@ function normalizePatterns(pathsList) {
         const absolute = path.resolve(value);
         if (fs.existsSync(absolute) && fs.statSync(absolute).isDirectory()) {
             const normalized = value.replace(/\\/g, "/").replace(/\/$/, "");
-            patterns.push(`${normalized}/**/*`);
+            patterns.push(`${normalized}/${extPattern}`);
             continue;
         }
         patterns.push(value);
     }
     return patterns;
+}
+function isProbablyText(buffer) {
+    const sampleSize = Math.min(buffer.length, 2048);
+    for (let i = 0; i < sampleSize; i++) {
+        if (buffer[i] === 0)
+            return false;
+    }
+    return true;
 }
 function extractComments(source) {
     const comments = [];
@@ -155,10 +181,19 @@ async function main() {
     const user = loadConfig(opts.config);
     const phrases = user.phrases && user.phrases.length > 0 ? user.phrases : defaultPhrases;
     const threshold = opts.thresholdProvided ? opts.threshold : (user.threshold ?? opts.threshold);
-    const patterns = normalizePatterns(opts.paths);
+    const patterns = normalizePatterns(opts.paths, opts.extensions);
     const files = await fg(patterns, {
         onlyFiles: true,
-        ignore: ["**/node_modules/**", "**/dist/**", "**/.git/**"]
+        ignore: [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/.git/**",
+            "**/.next/**",
+            "**/coverage/**",
+            "**/build/**",
+            "**/.turbo/**",
+            "**/.cache/**"
+        ]
     });
     if (files.length === 0) {
         console.error(`No files matched. Check --paths: ${opts.paths.join(", ")}`);
@@ -167,7 +202,10 @@ async function main() {
     }
     const targets = [];
     for (const file of files) {
-        const src = fs.readFileSync(file, "utf8");
+        const raw = fs.readFileSync(file);
+        if (!isProbablyText(raw))
+            continue;
+        const src = raw.toString("utf8");
         const comments = extractComments(src).join("\n");
         targets.push({ location: file, text: comments });
     }
